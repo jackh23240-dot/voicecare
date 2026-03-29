@@ -149,6 +149,13 @@
       开启问候
     </button>
 
+    <!-- Free Learning Entry -->
+    <button onclick="navigateTo('freestyle')" class="w-full max-w-md mt-6 py-8 bg-gradient-to-br from-primary to-secondary text-white rounded-4xl text-3xl font-black elder-shadow transition-all active:scale-95 flex items-center justify-center gap-4 group">
+      <span class="material-symbols-outlined text-5xl group-hover:rotate-12 transition-transform">school</span>
+      自由学习
+    </button>
+    <p class="mt-3 text-lg text-on-surface-variant font-medium">想学什么？自己选！</p>
+
     <!-- Helper Text -->
     <div class="mt-12 flex items-center gap-3 text-on-surface-variant/60 font-semibold">
       <span class="material-symbols-outlined text-2xl">touch_app</span>
@@ -179,10 +186,14 @@
 
   <script>
     function navigateTo(page) {
-      if (page === 'learning') {
+      if (page === 'home') {
+        window.location.href = 'elder-home.html';
+      } else if (page === 'learning') {
         window.location.href = 'elder-learning.html';
       } else if (page === 'feedback') {
         window.location.href = 'elder-feedback.html';
+      } else if (page === 'freestyle') {
+        window.location.href = 'elder-freestyle.html';
       }
     }
   </script>
