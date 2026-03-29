@@ -76,6 +76,14 @@
       transform: scale(0.95);
     }
     
+    .phrase-card {
+      transition: all 0.2s ease;
+    }
+    
+    .phrase-card:active {
+      transform: scale(0.98);
+    }
+    
     body {
       font-family: 'Noto Sans SC', sans-serif;
     }
@@ -87,6 +95,10 @@
     
     .float-animation {
       animation: float 3s ease-in-out infinite;
+    }
+    
+    .timer-display {
+      font-variant-numeric: tabular-nums;
     }
   </style>
 </head>
@@ -110,107 +122,212 @@
   <main class="flex-1 px-6 pt-8 pb-32">
     
     <!-- Welcome Header -->
-    <div class="text-center mb-10">
-      <h1 class="text-4xl font-black text-on-surface mb-3">想学什么？</h1>
-      <p class="text-xl text-on-surface-variant font-medium">选择一个类别，开始学习吧</p>
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-black text-on-surface mb-2">今天想学什么？</h1>
+      <p class="text-xl text-on-surface-variant font-medium">What would you like to learn today?</p>
     </div>
 
-    <!-- Category Grid -->
-    <div class="grid grid-cols-2 gap-4 mb-10">
-      
-      <!-- Travel Category -->
-      <button onclick="selectCategory('travel')" class="category-card bg-gradient-to-br from-category-travel to-red-500 text-white rounded-4xl p-6 elder-shadow flex flex-col items-center justify-center gap-3 min-h-[160px]">
-        <span class="material-symbols-outlined text-6xl">flight_takeoff</span>
-        <span class="text-2xl font-black">出行旅游</span>
-        <span class="text-white/80 text-base font-medium">12 个单词</span>
+    <!-- Category Filter Buttons -->
+    <div class="flex flex-wrap gap-3 mb-8 justify-center">
+      <button onclick="filterCategory('all')" class="px-6 py-3 bg-warm-orange text-white rounded-full text-xl font-bold elder-shadow active:scale-95 transition-all">
+        全部 All
       </button>
-
-      <!-- Shopping Category -->
-      <button onclick="selectCategory('shopping')" class="category-card bg-gradient-to-br from-category-shopping to-teal-500 text-white rounded-4xl p-6 elder-shadow flex flex-col items-center justify-center gap-3 min-h-[160px]">
-        <span class="material-symbols-outlined text-6xl">shopping_cart</span>
-        <span class="text-2xl font-black">超市购物</span>
-        <span class="text-white/80 text-base font-medium">15 个单词</span>
+      <button onclick="filterCategory('greeting')" class="px-6 py-3 bg-surface-container text-on-surface rounded-full text-xl font-bold active:scale-95 transition-all">
+        👋 问候
       </button>
-
-      <!-- Health Category -->
-      <button onclick="selectCategory('health')" class="category-card bg-gradient-to-br from-category-health to-green-500 text-white rounded-4xl p-6 elder-shadow flex flex-col items-center justify-center gap-3 min-h-[160px]">
-        <span class="material-symbols-outlined text-6xl">local_hospital</span>
-        <span class="text-2xl font-black">医疗健康</span>
-        <span class="text-white/80 text-base font-medium">10 个单词</span>
+      <button onclick="filterCategory('daily')" class="px-6 py-3 bg-surface-container text-on-surface rounded-full text-xl font-bold active:scale-95 transition-all">
+        🏠 日常
       </button>
-
-      <!-- Daily Category -->
-      <button onclick="selectCategory('daily')" class="category-card bg-gradient-to-br from-category-daily to-yellow-500 text-white rounded-4xl p-6 elder-shadow flex flex-col items-center justify-center gap-3 min-h-[160px]">
-        <span class="material-symbols-outlined text-6xl">home</span>
-        <span class="text-2xl font-black">日常生活</span>
-        <span class="text-white/80 text-base font-medium">18 个单词</span>
+      <button onclick="filterCategory('shopping')" class="px-6 py-3 bg-surface-container text-on-surface rounded-full text-xl font-bold active:scale-95 transition-all">
+        🛒 购物
       </button>
-
-      <!-- Food Category -->
-      <button onclick="selectCategory('food')" class="category-card bg-gradient-to-br from-category-food to-orange-500 text-white rounded-4xl p-6 elder-shadow flex flex-col items-center justify-center gap-3 min-h-[160px]">
-        <span class="material-symbols-outlined text-6xl">restaurant</span>
-        <span class="text-2xl font-black">餐厅就餐</span>
-        <span class="text-white/80 text-base font-medium">14 个单词</span>
+      <button onclick="filterCategory('health')" class="px-6 py-3 bg-surface-container text-on-surface rounded-full text-xl font-bold active:scale-95 transition-all">
+        🏥 健康
       </button>
-
-      <!-- Emergency Category -->
-      <button onclick="selectCategory('emergency')" class="category-card bg-gradient-to-br from-category-emergency to-red-600 text-white rounded-4xl p-6 elder-shadow flex flex-col items-center justify-center gap-3 min-h-[160px]">
-        <span class="material-symbols-outlined text-6xl">emergency</span>
-        <span class="text-2xl font-black">紧急情况</span>
-        <span class="text-white/80 text-base font-medium">8 个单词</span>
+      <button onclick="filterCategory('other')" class="px-6 py-3 bg-surface-container text-on-surface rounded-full text-xl font-bold active:scale-95 transition-all">
+        💬 其他
       </button>
     </div>
 
-    <!-- Recent Learning -->
+    <!-- Learning Mode Info -->
+    <div class="bg-surface-container-lowest rounded-4xl p-6 elder-shadow mb-8">
+      <div class="flex items-start gap-4">
+        <span class="material-symbols-outlined text-primary text-4xl">psychology</span>
+        <div>
+          <h3 class="text-2xl font-bold text-on-surface mb-2">🎧 跟读学习模式 Listen & Repeat Mode</h3>
+          <p class="text-lg text-on-surface-variant leading-relaxed">
+            <strong>学习模式：</strong><br/>
+            1️⃣ 选择一个短语 Choose a phrase<br/>
+            2️⃣ 中文 → 英文 → 英文 (循环)<br/>
+            3️⃣ 10 分钟后自动停止 Auto-stop after 10 minutes
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phrase Selector -->
+    <div class="bg-surface-container-lowest rounded-4xl p-6 elder-shadow mb-8">
+      <label class="block text-2xl font-bold text-on-surface mb-4">
+        📝 选择短语 Select a Phrase:
+      </label>
+      <select id="phraseSelect" onchange="selectPhrase()" class="w-full h-20 px-6 bg-surface-container rounded-3xl text-2xl font-bold text-on-surface outline-none border-2 border-transparent focus:border-warm-orange active:scale-98 transition-all">
+        <!-- Greetings -->
+        <option value="greeting-1">你好！ → Hello!</option>
+        <option value="greeting-2">早上好。 → Good morning.</option>
+        <option value="greeting-3">下午好。 → Good afternoon.</option>
+        <option value="greeting-4">晚上好。 → Good evening.</option>
+        <option value="greeting-5">晚安。 → Good night.</option>
+        <option value="greeting-6">你好吗？ → How are you?</option>
+        <option value="greeting-7">我很好，谢谢。 → I'm fine, thank you.</option>
+        <option value="greeting-8">你呢？ → And you?</option>
+        <option value="greeting-9">很高兴认识你。 → Nice to meet you.</option>
+        <option value="greeting-10">你叫什么名字？ → What's your name?</option>
+        <option value="greeting-11">我叫…… → My name is...</option>
+        <option value="greeting-12">再见！ → Goodbye!</option>
+        <option value="greeting-13">回头见。 → See you later.</option>
+        <option value="greeting-14">明天见。 → See you tomorrow.</option>
+        <option value="greeting-15">祝你今天愉快。 → Have a nice day.</option>
+        
+        <!-- Daily -->
+        <option value="daily-1">谢谢。 → Thank you.</option>
+        <option value="daily-2">非常感谢。 → Thank you very much.</option>
+        <option value="daily-3">不客气。 → You're welcome.</option>
+        <option value="daily-4">对不起。 → Sorry.</option>
+        <option value="daily-5">没关系。 → It's okay.</option>
+        <option value="daily-6">打扰一下。 → Excuse me.</option>
+        <option value="daily-7">请。 → Please.</option>
+        <option value="daily-8">你能帮我吗？ → Can you help me?</option>
+        <option value="daily-9">当然。 → Sure.</option>
+        <option value="daily-10">我不明白。 → I don't understand.</option>
+        <option value="daily-11">你能再说一遍吗？ → Can you say that again?</option>
+        <option value="daily-12">请慢一点。 → Please speak slower.</option>
+        <option value="daily-13">这个用英语怎么说？ → What's this in English?</option>
+        <option value="daily-14">我饿了。 → I'm hungry.</option>
+        <option value="daily-15">我渴了。 → I'm thirsty.</option>
+        <option value="daily-16">我累了。 → I'm tired.</option>
+        <option value="daily-17">我开心。 → I'm happy.</option>
+        <option value="daily-18">我难过。 → I'm sad.</option>
+        <option value="daily-19">小心！ → Be careful!</option>
+        <option value="daily-20">加油！ → Come on!</option>
+        
+        <!-- Shopping -->
+        <option value="shopping-1">多少钱？ → How much is it?</option>
+        <option value="shopping-2">太贵了。 → It's too expensive.</option>
+        <option value="shopping-3">我要买这个。 → I'll take this.</option>
+        <option value="shopping-4">你想要点什么？ → What would you like?</option>
+        <option value="shopping-5">我想要水。 → I'd like some water.</option>
+        <option value="shopping-6">给你。 → Here you are.</option>
+        <option value="shopping-7">有折扣吗？ → Is there a discount?</option>
+        <option value="shopping-8">可以刷卡吗？ → Can I pay by card?</option>
+        <option value="shopping-9">我用现金。 → I pay with cash.</option>
+        <option value="shopping-10">有别的颜色吗？ → Do you have other colors?</option>
+        <option value="shopping-11">有别的尺寸吗？ → Do you have other sizes?</option>
+        <option value="shopping-12">我试试。 → Let me try it.</option>
+        <option value="shopping-13">这个适合我。 → This fits me.</option>
+        <option value="shopping-14">太贵了，便宜点。 → Too expensive, cheaper please.</option>
+        <option value="shopping-15">我下次再来。 → I'll come back next time.</option>
+        
+        <!-- Health -->
+        <option value="health-1">我不舒服。 → I don't feel well.</option>
+        <option value="health-2">我头痛。 → I have a headache.</option>
+        <option value="health-3">我发烧。 → I have a fever.</option>
+        <option value="health-4">我需要医生。 → I need a doctor.</option>
+        <option value="health-5">医院在哪里？ → Where is the hospital?</option>
+        <option value="health-6">药店在哪里？ → Where is the pharmacy?</option>
+        <option value="health-7">救命！ → Help!</option>
+        <option value="health-8">叫救护车！ → Call an ambulance!</option>
+        <option value="health-9">我过敏。 → I have an allergy.</option>
+        <option value="health-10">我有高血压。 → I have high blood pressure.</option>
+        <option value="health-11">我要吃药。 → I need to take medicine.</option>
+        <option value="health-12">多喝水。 → Drink more water.</option>
+        <option value="health-13">保重。 → Take care.</option>
+        <option value="health-14">早日康复。 → Get well soon.</option>
+        <option value="health-15">我很好。 → I'm okay.</option>
+        
+        <!-- Other -->
+        <option value="other-1">几点了？ → What time is it?</option>
+        <option value="other-2">今天星期几？ → What day is it today?</option>
+        <option value="other-3">今天天气怎么样？ → How's the weather today?</option>
+        <option value="other-4">今天天晴。 → It's sunny.</option>
+        <option value="other-5">今天下雨。 → It's rainy.</option>
+        <option value="other-6">今天多云。 → It's cloudy.</option>
+        <option value="other-7">我冷。 → I'm cold.</option>
+        <option value="other-8">我热。 → I'm hot.</option>
+        <option value="other-9">你来自哪里？ → Where are you from?</option>
+        <option value="other-10">我来自中国。 → I'm from China.</option>
+        <option value="other-11">你住在哪里？ → Where do you live?</option>
+        <option value="other-12">这是我的朋友。 → This is my friend.</option>
+        <option value="other-13">生日快乐！ → Happy birthday!</option>
+        <option value="other-14">新年快乐！ → Happy New Year!</option>
+        <option value="other-15">圣诞快乐！ → Merry Christmas!</option>
+        <option value="other-16">我想念你。 → I miss you.</option>
+        <option value="other-17">我爱你。 → I love you.</option>
+        <option value="other-18">我们是朋友。 → We are friends.</option>
+        <option value="other-19">听起来不错。 → That sounds good.</option>
+        <option value="other-20">我同意。 → I agree.</option>
+        <option value="other-21">也许吧。 → Maybe.</option>
+        <option value="other-22">洗手间在哪里？ → Where is the bathroom?</option>
+        <option value="other-23">这边请。 → This way, please.</option>
+        <option value="other-24">我迷路了。 → I'm lost.</option>
+        <option value="other-25">你能给我你的号码吗？ → Can you give me your number?</option>
+        <option value="other-26">给我打电话。 → Call me.</option>
+        <option value="other-27">恭喜你！ → Congratulations!</option>
+        <option value="other-28">干杯！ → Cheers!</option>
+        <option value="other-29">好吃。 → It's delicious.</option>
+        <option value="other-30">我饱了。 → I'm full.</option>
+      </select>
+    </div>
+
+    <!-- Current Phrase Display -->
+    <div id="currentPhrase" class="bg-gradient-to-br from-warm-orange to-warm-orange-dark text-white rounded-4xl p-8 elder-shadow mb-6 text-center">
+      <p id="chineseText" class="text-5xl font-black mb-4">你好！</p>
+      <p id="englishText" class="text-4xl font-bold opacity-90">Hello!</p>
+    </div>
+
+    <!-- Timer Display -->
     <div class="bg-surface-container-lowest rounded-4xl p-6 elder-shadow mb-6">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="material-symbols-outlined text-primary text-3xl">history</span>
-        <h3 class="text-2xl font-bold text-on-surface">最近学习</h3>
-      </div>
-      <div class="space-y-3">
-        <div class="flex items-center justify-between p-4 bg-surface-container rounded-3xl">
-          <div class="flex items-center gap-3">
-            <span class="w-12 h-12 bg-category-travel/20 rounded-full flex items-center justify-center">
-              <span class="material-symbols-outlined text-category-travel text-2xl">flight_takeoff</span>
-            </span>
-            <div class="text-left">
-              <p class="text-xl font-bold text-on-surface">Passport</p>
-              <p class="text-base text-on-surface-variant">护照 · 出行旅游</p>
-            </div>
-          </div>
-          <button onclick="quickReview('passport')" class="w-12 h-12 bg-warm-orange text-white rounded-full flex items-center justify-center">
-            <span class="material-symbols-outlined text-2xl">play_arrow</span>
-          </button>
-        </div>
-        <div class="flex items-center justify-between p-4 bg-surface-container rounded-3xl">
-          <div class="flex items-center gap-3">
-            <span class="w-12 h-12 bg-category-shopping/20 rounded-full flex items-center justify-center">
-              <span class="material-symbols-outlined text-category-shopping text-2xl">shopping_cart</span>
-            </span>
-            <div class="text-left">
-              <p class="text-xl font-bold text-on-surface">Water</p>
-              <p class="text-base text-on-surface-variant">水 · 超市购物</p>
-            </div>
-          </div>
-          <button onclick="quickReview('water')" class="w-12 h-12 bg-warm-orange text-white rounded-full flex items-center justify-center">
-            <span class="material-symbols-outlined text-2xl">play_arrow</span>
-          </button>
-        </div>
+      <div class="text-center">
+        <p class="text-2xl font-bold text-on-surface-variant mb-2">学习时间 Learning Time</p>
+        <p id="timerDisplay" class="text-7xl font-black text-warm-orange timer-display">10:00</p>
       </div>
     </div>
 
-    <!-- Search Box -->
-    <div class="bg-surface-container-lowest rounded-4xl p-6 elder-shadow">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="material-symbols-outlined text-primary text-3xl">search</span>
-        <h3 class="text-2xl font-bold text-on-surface">搜索单词</h3>
+    <!-- Control Buttons -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <button onclick="startLearning()" class="py-6 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-3xl text-2xl font-black elder-shadow active:scale-95 transition-all flex flex-col items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-4xl">play_arrow</span>
+        <span>开始学习</span>
+      </button>
+      <button onclick="testAudio()" class="py-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-3xl text-2xl font-black elder-shadow active:scale-95 transition-all flex flex-col items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-4xl">volume_up</span>
+        <span>试听</span>
+      </button>
+      <button onclick="stopLearning()" class="py-6 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-3xl text-2xl font-black elder-shadow active:scale-95 transition-all flex flex-col items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-4xl">stop</span>
+        <span>停止</span>
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="bg-surface-container-lowest rounded-3xl p-4 elder-shadow text-center">
+        <p id="sessionsCount" class="text-4xl font-black text-primary mb-1">0</p>
+        <p class="text-sm font-bold text-on-surface-variant">完成次数<br/>Sessions</p>
       </div>
-      <div class="flex gap-3">
-        <input type="text" placeholder="输入想学的单词..." class="flex-1 h-16 px-6 bg-surface-container rounded-3xl text-xl font-bold text-on-surface placeholder-on-surface-variant/50 border-2 border-transparent focus:border-warm-orange outline-none"/>
-        <button class="w-16 h-16 bg-warm-orange text-white rounded-full flex items-center justify-center elder-shadow">
-          <span class="material-symbols-outlined text-3xl">search</span>
-        </button>
+      <div class="bg-surface-container-lowest rounded-3xl p-4 elder-shadow text-center">
+        <p id="minutesCount" class="text-4xl font-black text-secondary mb-1">0</p>
+        <p class="text-sm font-bold text-on-surface-variant">学习分钟<br/>Minutes</p>
       </div>
+      <div class="bg-surface-container-lowest rounded-3xl p-4 elder-shadow text-center">
+        <p id="phrasesCount" class="text-4xl font-black text-tertiary mb-1">0</p>
+        <p class="text-sm font-bold text-on-surface-variant">练习短语<br/>Phrases</p>
+      </div>
+    </div>
+
+    <!-- Tip -->
+    <div class="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-4xl p-6 text-center">
+      <p class="text-xl font-bold text-on-surface">💡 每天 10 分钟，轻松学英语！</p>
+      <p class="text-lg text-on-surface-variant mt-2">10 minutes a day, learn English easily!</p>
     </div>
   </main>
 
@@ -233,6 +350,146 @@
   </nav>
 
   <script>
+    let isLearning = false;
+    let timerInterval;
+    let timeRemaining = 600; // 10 minutes in seconds
+    let sessions = 0;
+    let totalMinutes = 0;
+    let phrasesLearned = 0;
+    let learningTimeout;
+    
+    // Load stats from localStorage
+    function loadStats() {
+      const saved = localStorage.getItem('voicecare_stats');
+      if (saved) {
+        const stats = JSON.parse(saved);
+        sessions = stats.sessions || 0;
+        totalMinutes = stats.minutes || 0;
+        phrasesLearned = stats.phrases || 0;
+        updateStatsDisplay();
+      }
+    }
+    
+    // Save stats to localStorage
+    function saveStats() {
+      localStorage.setItem('voicecare_stats', JSON.stringify({
+        sessions,
+        minutes: totalMinutes,
+        phrases: phrasesLearned
+      }));
+    }
+    
+    // Update stats display
+    function updateStatsDisplay() {
+      document.getElementById('sessionsCount').textContent = sessions;
+      document.getElementById('minutesCount').textContent = totalMinutes;
+      document.getElementById('phrasesCount').textContent = phrasesLearned;
+    }
+    
+    // Format time
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    // Update timer display
+    function updateTimerDisplay() {
+      document.getElementById('timerDisplay').textContent = formatTime(timeRemaining);
+    }
+    
+    // Select phrase
+    function selectPhrase() {
+      const select = document.getElementById('phraseSelect');
+      const selected = select.options[select.selectedIndex].text;
+      const [chinese, english] = selected.split(' → ');
+      
+      document.getElementById('chineseText').textContent = chinese.trim();
+      document.getElementById('englishText').textContent = english.trim();
+      
+      // Reset timer
+      timeRemaining = 600;
+      updateTimerDisplay();
+    }
+    
+    // Start learning
+    function startLearning() {
+      if (isLearning) return;
+      
+      isLearning = true;
+      sessions++;
+      phrasesLearned++;
+      updateStatsDisplay();
+      saveStats();
+      
+      // Simulate learning loop: Chinese → English → English
+      const chineseText = document.getElementById('chineseText').textContent;
+      const englishText = document.getElementById('englishText').textContent;
+      
+      alert(`🎧 开始学习！\n\n播放顺序:\n${chineseText}\n→ ${englishText}\n→ ${englishText}\n\n(循环 10 分钟)`);
+      
+      // Countdown timer
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        
+        // Track minutes
+        if (timeRemaining % 60 === 0 && timeRemaining < 600) {
+          totalMinutes++;
+          updateStatsDisplay();
+          saveStats();
+        }
+        
+        if (timeRemaining <= 0) {
+          stopLearning();
+          alert('✅ 学习时间结束！\nLearning session complete!\n\n真棒！休息一下吧~');
+        }
+      }, 1000); // Speed up for demo (normally would be slower)
+    }
+    
+    // Test audio
+    function testAudio() {
+      const chineseText = document.getElementById('chineseText').textContent;
+      const englishText = document.getElementById('englishText').textContent;
+      
+      alert(`🔊 试听:\n\n${chineseText}\n\n${englishText}\n\n${englishText}`);
+    }
+    
+    // Stop learning
+    function stopLearning() {
+      if (!isLearning) return;
+      
+      isLearning = false;
+      clearInterval(timerInterval);
+      timeRemaining = 600;
+      updateTimerDisplay();
+    }
+    
+    // Filter category
+    function filterCategory(category) {
+      const select = document.getElementById('phraseSelect');
+      const options = select.options;
+      
+      for (let i = 0; i < options.length; i++) {
+        const value = options[i].value;
+        if (category === 'all' || value.startsWith(category)) {
+          options[i].style.display = 'block';
+        } else {
+          options[i].style.display = 'none';
+        }
+      }
+      
+      // Select first visible option
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].style.display !== 'none') {
+          select.selectedIndex = i;
+          selectPhrase();
+          break;
+        }
+      }
+    }
+    
+    // Navigate
     function navigateTo(page) {
       if (page === 'home') {
         window.location.href = 'elder-home.html';
@@ -245,17 +502,9 @@
       }
     }
     
-    function selectCategory(category) {
-      // 跳转到对应类别的单词列表
-      alert('即将进入：' + category + ' 类别的学习');
-      // 实际实现会跳转到类别详情页
-    }
-    
-    function quickReview(word) {
-      // 快速复习单词
-      alert('开始复习：' + word);
-      // 实际实现会直接播放该单词的音频
-    }
+    // Initialize
+    loadStats();
+    selectPhrase();
   </script>
 </body>
 </html>
