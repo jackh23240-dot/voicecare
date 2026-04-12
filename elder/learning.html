@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>亲声伴读 - 学习</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "elder-bg": "#FFF8F0",
+            "elder-warm": "#FFF8F0",
+            "warm-orange": "#FF9F43",
+            "warm-orange-dark": "#E67E22",
+            "warm-cream": "#FFFBF5",
+            "surface": "#f7f5ff",
+            "surface-container": "#e4e7ff",
+            "surface-container-low": "#efefff",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#0057bd",
+            "primary-container": "#6e9fff",
+            "secondary": "#3a53b7",
+            "secondary-container": "#c7cfff",
+            "tertiary": "#893c92",
+            "tertiary-container": "#f199f7",
+            "on-surface": "#1a1a1a",
+            "on-surface-variant": "#333333",
+            "outline-variant": "#a3abd7",
+          },
+          fontFamily: {
+            "elder": ["Noto Sans SC", "sans-serif"],
+          },
+          borderRadius: {
+            "2xl": "1.5rem",
+            "3xl": "2rem",
+            "4xl": "2.5rem",
+          },
+          fontSize: {
+            "huge": ["3.5rem", { lineHeight: "1.1" }],
+            "massive": ["4.5rem", { lineHeight: "1.1" }],
+            "giant": ["6rem", { lineHeight: "1" }],
+          }
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 48;
+    }
+    
+    .elder-shadow {
+      box-shadow: 0 20px 40px -10px rgba(255, 159, 67, 0.3);
+    }
+    
+    /* 心跳光晕动画 */
+    @keyframes heartbeat-glow {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 0 60px rgba(255, 159, 67, 0.4);
+      }
+      50% { 
+        transform: scale(1.05);
+        box-shadow: 0 0 100px rgba(255, 159, 67, 0.8);
+      }
+    }
+    
+    .playing-glow {
+      animation: heartbeat-glow 1s ease-in-out infinite;
+    }
+    
+    /* 单词字母跳动动画 */
+    @keyframes letter-bounce {
+      0%, 100% { 
+        transform: translateY(0) scale(1);
+        color: #1a1a1a;
+      }
+      50% { 
+        transform: translateY(-20px) scale(1.1);
+        color: #FF9F43;
+      }
+    }
+    
+    .letter-animate {
+      display: inline-block;
+      animation: letter-bounce 0.5s ease-in-out;
+    }
+    
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 700;
+    }
+    
+    .waveform-bar {
+      transition: height 0.3s ease;
+    }
+    
+    .waveform-bar.active {
+      background: linear-gradient(to top, #FF9F43, #E67E22);
+    }
+    
+    /* 所有文字加粗到 700 */
+    * {
+      font-weight: 700 !important;
+    }
+    
+    /* 进度指示器固定底部 */
+    .progress-fixed {
+      position: fixed;
+      bottom: 100px;
+      left: 0;
+      right: 0;
+      z-index: 40;
+    }
+  </style>
+</head>
+
+<body class="bg-elder-warm min-h-screen flex flex-col">
+  
+  <!-- Top Navigation -->
+  <nav class="bg-white/80 backdrop-blur-xl shadow-sm sticky top-0 z-50">
+    <div class="flex justify-between items-center px-6 py-4">
+      <button onclick="navigateTo('home')" class="p-2 text-slate-500 hover:bg-warm-orange/10 transition-colors rounded-full">
+        <span class="material-symbols-outlined text-3xl">arrow_back</span>
+      </button>
+      <span class="text-2xl font-black text-warm-orange-dark">亲声伴读</span>
+      <div class="w-12 h-12 rounded-full bg-surface-container overflow-hidden border-2 border-warm-orange/30">
+        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA36ML8HLIjJhksWM9xCpWLpxnBwtelNi62b9V99hW36-E9C1DCdeqCWXg1epSCbN2PA1Q6lG1yN6oI-1FOadeYtgwKjeSAfa6xLFcIVS-ksuY5ORTPjyKmy2G_Y9skbrpv_cTz3JJNtA0enziJCdRURjVXQdjshWGlk-g-_4R1fuutzxUQvqrLy0fDetIGD30vKGfpq3we1Ux0G9ODrGYE7LnPSo4oSQPNr3PW7R65kdkPaVMfnvkVSxc2VJ5SFnIqCUclv5h_1jn3" alt="用户头像"/>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 px-6 pt-8 pb-32">
+    
+    <!-- Progress Indicator - FIXED AT BOTTOM -->
+    <div class="progress-fixed bg-white/90 backdrop-blur-xl rounded-4xl mx-6 p-4 elder-shadow">
+      <div class="flex items-center justify-center gap-3">
+        <span class="text-lg font-bold text-on-surface-variant">单词 1 of 3</span>
+        <div class="flex gap-2">
+          <div class="w-3 h-3 rounded-full bg-warm-orange"></div>
+          <div class="w-3 h-3 rounded-full bg-surface-container"></div>
+          <div class="w-3 h-3 rounded-full bg-surface-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Word Display - EXTRA LARGE with individual letter animation -->
+    <div class="text-center mb-10">
+      <h1 id="wordDisplay" class="text-giant md:text-[8rem] font-black text-on-surface leading-none tracking-tight">
+        <span class="letter" data-index="0">P</span><span class="letter" data-index="1">a</span><span class="letter" data-index="2">s</span><span class="letter" data-index="3">s</span><span class="letter" data-index="4">p</span><span class="letter" data-index="5">o</span><span class="letter" data-index="6">r</span><span class="letter" data-index="7">t</span>
+      </h1>
+      <p class="text-4xl font-bold text-warm-orange-dark mt-4">/ˈpɑːspɔːt/</p>
+    </div>
+
+    <!-- GIANT Play Button - 140px -->
+    <button id="playButton" onclick="togglePlay()" class="w-full max-w-2xl mx-auto py-12 bg-gradient-to-br from-warm-orange to-warm-orange-dark text-white rounded-4xl text-4xl font-black elder-shadow transition-all active:scale-95 flex flex-col items-center justify-center gap-4 group mb-10">
+      <div id="playIconContainer" class="w-[140px] h-[140px] bg-white rounded-full flex items-center justify-center shadow-inner transition-all">
+        <span id="playIcon" class="material-symbols-outlined text-warm-orange text-[80px]">play_arrow</span>
+      </div>
+      <span>听听孩子怎么说</span>
+      <span class="text-white/80 text-xl font-medium">您的孙子 小明 录制于今天早上</span>
+    </button>
+
+    <!-- Waveform Visualization -->
+    <div class="bg-surface-container rounded-4xl p-6 mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="material-symbols-outlined text-primary text-3xl">graphic_eq</span>
+        <h3 class="text-xl font-bold text-on-surface">录音波形</h3>
+      </div>
+      <div id="waveform" class="flex items-end justify-between h-24 gap-1 px-4">
+        <!-- Waveform bars generated by JS -->
+      </div>
+    </div>
+
+    <!-- Chinese Translation Card -->
+    <div class="bg-surface-container-lowest rounded-4xl p-8 elder-shadow mb-6">
+      <div class="flex items-center justify-between mb-6">
+        <span class="px-6 py-3 bg-secondary-fixed text-on-secondary-fixed rounded-full font-bold text-xl">中文含义</span>
+        <label class="flex items-center gap-3 cursor-pointer">
+          <span class="text-xl font-bold text-on-surface-variant">中文谐音</span>
+          <div class="w-16 h-8 bg-primary rounded-full relative transition-colors">
+            <div id="toggleKnob" class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform"></div>
+          </label>
+        </div>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="flex items-baseline gap-4 flex-wrap">
+          <h2 class="text-6xl font-bold text-on-surface">护照</h2>
+          <p id="phonetic" class="text-4xl text-warm-orange-dark font-medium hidden">帕死跑特</p>
+        </div>
+        <p class="text-2xl text-on-surface-variant leading-relaxed">
+          出入国境时，证明持有人国籍和身份的合法证件。<br/>就像我们在国内使用的身份证一样重要。
+        </p>
+      </div>
+    </div>
+
+    <!-- Example Sentence -->
+    <div class="bg-primary/5 rounded-4xl p-8 border-l-8 border-primary">
+      <p class="text-on-surface-variant text-xl mb-3">英文例句</p>
+      <p class="text-3xl font-bold text-on-surface leading-tight mb-3">
+        Don't forget your <span class="text-primary">passport</span>!
+      </p>
+      <p class="text-2xl text-on-surface-variant">别忘了带上你的护照！</p>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] rounded-t-4xl pb-6 z-50">
+    <div class="flex justify-around items-center px-4 py-4">
+      <a class="flex flex-col items-center justify-center text-slate-400 px-6 py-3">
+        <span class="material-symbols-outlined text-3xl mb-1">auto_stories</span>
+        <span class="text-sm font-bold">归档</span>
+      </a>
+      <a class="flex flex-col items-center justify-center bg-warm-orange/10 text-warm-orange-dark rounded-3xl px-8 py-3">
+        <span class="material-symbols-outlined text-3xl mb-1" style="font-variation-settings: 'FILL' 1;">record_voice_over</span>
+        <span class="text-sm font-bold">交流</span>
+      </a>
+      <a class="flex flex-col items-center justify-center text-slate-400 px-6 py-3">
+        <span class="material-symbols-outlined text-3xl mb-1">family_history</span>
+        <span class="text-sm font-bold">家人</span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    let isPlaying = false;
+    let playInterval;
+    let waveInterval;
+    let letterAnimationTimeout;
+    
+    // Generate waveform bars
+    const waveform = document.getElementById('waveform');
+    for (let i = 0; i < 20; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'waveform-bar w-3 bg-primary/30 rounded-full';
+      bar.style.height = Math.random() * 80 + 20 + '%';
+      waveform.appendChild(bar);
+    }
+    
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      const playIcon = document.getElementById('playIcon');
+      const playIconContainer = document.getElementById('playIconContainer');
+      const playButton = document.getElementById('playButton');
+      const letters = document.querySelectorAll('.letter');
+      
+      if (isPlaying) {
+        playIcon.textContent = 'pause';
+        playIconContainer.classList.add('playing-glow');
+        playButton.classList.add('playing-glow');
+        
+        // Animate waveform
+        const bars = document.querySelectorAll('.waveform-bar');
+        waveInterval = setInterval(() => {
+          bars.forEach(bar => {
+            bar.classList.toggle('active');
+            bar.style.height = Math.random() * 80 + 20 + '%';
+          });
+        }, 300);
+        
+        // Animate letters sequentially
+        animateLetters();
+        
+        // Auto-navigate to feedback after 5 seconds (simulating audio end)
+        setTimeout(() => {
+          if (isPlaying) {
+            togglePlay();
+            navigateTo('feedback');
+          }
+        }, 5000);
+      } else {
+        playIcon.textContent = 'play_arrow';
+        playIconContainer.classList.remove('playing-glow');
+        playButton.classList.remove('playing-glow');
+        clearInterval(waveInterval);
+        clearTimeout(letterAnimationTimeout);
+        
+        // Reset waveform
+        const bars = document.querySelectorAll('.waveform-bar');
+        bars.forEach(bar => {
+          bar.classList.remove('active');
+          bar.style.height = Math.random() * 80 + 20 + '%';
+        });
+        
+        // Reset letters
+        letters.forEach(letter => {
+          letter.classList.remove('letter-animate');
+        });
+      }
+    }
+    
+    function animateLetters() {
+      const letters = document.querySelectorAll('.letter');
+      let currentIndex = 0;
+      
+      function animateNextLetter() {
+        if (!isPlaying || currentIndex >= letters.length) {
+          if (isPlaying && currentIndex >= letters.length) {
+            currentIndex = 0;
+            setTimeout(animateNextLetter, 500);
+          }
+          return;
+        }
+        
+        const letter = letters[currentIndex];
+        letter.classList.add('letter-animate');
+        
+        letterAnimationTimeout = setTimeout(() => {
+          letter.classList.remove('letter-animate');
+          currentIndex++;
+          animateNextLetter();
+        }, 500);
+      }
+      
+      animateNextLetter();
+    }
+    
+    // Toggle phonetic display - DEFAULT OFF
+    let showPhonetic = false;
+    document.querySelector('label').addEventListener('click', () => {
+      showPhonetic = !showPhonetic;
+      const phonetic = document.getElementById('phonetic');
+      const toggleKnob = document.getElementById('toggleKnob');
+      
+      if (showPhonetic) {
+        phonetic.classList.remove('hidden');
+        toggleKnob.style.transform = 'translateX(32px)';
+      } else {
+        phonetic.classList.add('hidden');
+        toggleKnob.style.transform = 'translateX(0)';
+      }
+    });
+    
+    function navigateTo(page) {
+      if (page === 'home') {
+        window.location.href = 'index.html';
+      } else if (page === 'feedback') {
+        window.location.href = 'feedback.html';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>亲声伴读 - 反馈</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "elder-bg": "#FFF8F0",
+            "elder-warm": "#FFF8F0",
+            "warm-orange": "#FF9F43",
+            "warm-orange-dark": "#E67E22",
+            "flower-red": "#FF6B6B",
+            "flower-red-dark": "#EE5A5A",
+            "reply-blue": "#4ECDC4",
+            "reply-blue-dark": "#45B7AF",
+            "replay-green": "#95E1A3",
+            "replay-green-dark": "#85D193",
+            "surface": "#f7f5ff",
+            "surface-container": "#e4e7ff",
+            "surface-container-low": "#efefff",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#1a1a1a",
+            "on-surface-variant": "#333333",
+          },
+          fontFamily: {
+            "elder": ["Noto Sans SC", "sans-serif"],
+          },
+          borderRadius: {
+            "2xl": "1.5rem",
+            "3xl": "2rem",
+            "4xl": "2.5rem",
+          },
+          fontSize: {
+            "huge": ["3.5rem", { lineHeight: "1.1" }],
+            "massive": ["4.5rem", { lineHeight: "1.1" }],
+          }
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 48;
+    }
+    
+    .elder-shadow {
+      box-shadow: 0 20px 40px -10px rgba(255, 159, 67, 0.3);
+    }
+    
+    /* 增强的撒花动画 - 多种 emoji */
+    @keyframes confetti-fall {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    .confetti {
+      position: fixed;
+      font-size: 24px;
+      animation: confetti-fall 3s linear infinite;
+      z-index: 100;
+    }
+    
+    @keyframes heart-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    
+    .heart-pulse {
+      animation: heart-pulse 0.6s ease-in-out infinite;
+    }
+    
+    @keyframes celebrate-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    .celebrate {
+      animation: celebrate-bounce 0.5s ease-in-out infinite;
+    }
+    
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 700;
+    }
+    
+    .recording-pulse {
+      animation: pulse-red 1s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-red {
+      0%, 100% { box-shadow: 0 0 40px rgba(255, 107, 107, 0.4); }
+      50% { box-shadow: 0 0 80px rgba(255, 107, 107, 0.7); }
+    }
+    
+    /* 反馈弹窗样式 */
+    .feedback-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .feedback-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .feedback-modal-content {
+      background: white;
+      border-radius: 2rem;
+      padding: 3rem;
+      text-align: center;
+      max-width: 90%;
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+    }
+    
+    .feedback-modal.show .feedback-modal-content {
+      transform: scale(1);
+    }
+    
+    /* 所有文字加粗 */
+    * {
+      font-weight: 700 !important;
+    }
+  </style>
+</head>
+
+<body class="bg-elder-warm min-h-screen flex flex-col">
+  
+  <!-- Confetti Container -->
+  <div id="confettiContainer" class="fixed inset-0 pointer-events-none overflow-hidden z-[999]"></div>
+
+  <!-- Top Navigation -->
+  <nav class="bg-white/80 backdrop-blur-xl shadow-sm sticky top-0 z-50">
+    <div class="flex justify-between items-center px-6 py-4">
+      <button onclick="navigateTo('learning')" class="p-2 text-slate-500 hover:bg-warm-orange/10 transition-colors rounded-full">
+        <span class="material-symbols-outlined text-3xl">arrow_back</span>
+      </button>
+      <span class="text-2xl font-black text-warm-orange-dark">亲声伴读</span>
+      <div class="w-12 h-12 rounded-full bg-surface-container overflow-hidden border-2 border-warm-orange/30">
+        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA36ML8HLIjJhksWM9xCpWLpxnBwtelNi62b9V99hW36-E9C1DCdeqCWXg1epSCbN2PA1Q6lG1yN6oI-1FOadeYtgwKjeSAfa6xLFcIVS-ksuY5ORTPjyKmy2G_Y9skbrpv_cTz3JJNtA0enziJCdRURjVXQdjshWGlk-g-_4R1fuutzxUQvqrLy0fDetIGD30vKGfpq3we1Ux0G9ODrGYE7LnPSo4oSQPNr3PW7R65kdkPaVMfnvkVSxc2VJ5SFnIqCUclv5h_1jn3" alt="用户头像"/>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
+    
+    <!-- Success Message -->
+    <div class="mb-12">
+      <div id="celebrationIcon" class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-warm-orange to-warm-orange-dark rounded-full flex items-center justify-center elder-shadow celebrate">
+        <span class="material-symbols-outlined text-white text-7xl">check_circle</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black text-on-surface mb-4">
+        真棒！已经听完啦
+      </h1>
+      <p class="text-xl text-on-surface-variant font-medium">
+        选一个方式回应小明吧
+      </p>
+    </div>
+
+    <!-- Three Action Buttons -->
+    <div class="w-full max-w-2xl space-y-6">
+      
+      <!-- Send Flower Button -->
+      <button onclick="sendFlower()" class="w-full py-10 bg-gradient-to-br from-flower-red to-flower-red-dark text-white rounded-4xl text-3xl font-black elder-shadow transition-all active:scale-95 flex items-center justify-center gap-4 group">
+        <span id="flowerIcon" class="material-symbols-outlined text-5xl group-hover:rotate-12 transition-transform">local_florist</span>
+        <span>送朵花</span>
+      </button>
+
+      <!-- Record Reply Button - ENHANCED GUIDANCE -->
+      <button id="recordButton" onmousedown="startRecording()" onmouseup="stopRecording()" ontouchstart="startRecording()" ontouchend="stopRecording()" class="w-full py-10 bg-gradient-to-br from-reply-blue to-reply-blue-dark text-white rounded-4xl text-3xl font-black elder-shadow transition-all active:scale-95 flex items-center justify-center gap-4 group">
+        <span id="recordIcon" class="material-symbols-outlined text-5xl">mic</span>
+        <span id="recordText">按住按钮，跟读一遍单词<br/>或者对小明说：'收到了，真好听！'</span>
+      </button>
+
+      <!-- Replay Button -->
+      <button onclick="replay()" class="w-full py-10 bg-gradient-to-br from-replay-green to-replay-green-dark text-white rounded-4xl text-3xl font-black elder-shadow transition-all active:scale-95 flex items-center justify-center gap-4 group">
+        <span class="material-symbols-outlined text-5xl group-hover:rotate-180 transition-transform duration-500">replay</span>
+        <span>再听一遍</span>
+      </button>
+    </div>
+
+    <!-- Recording Status -->
+    <div id="recordingStatus" class="hidden mt-8">
+      <div class="flex items-center justify-center gap-3 text-flower-red-dark font-bold text-2xl">
+        <span class="material-symbols-outlined text-4xl recording-pulse">mic</span>
+        <span>正在录音... 松开发送</span>
+      </div>
+      <div class="flex items-end justify-center gap-1 h-16 mt-4">
+        <div class="w-2 bg-flower-red rounded-full h-8 animate-pulse"></div>
+        <div class="w-2 bg-flower-red rounded-full h-12 animate-pulse" style="animation-delay: 0.1s"></div>
+        <div class="w-2 bg-flower-red rounded-full h-16 animate-pulse" style="animation-delay: 0.2s"></div>
+        <div class="w-2 bg-flower-red rounded-full h-10 animate-pulse" style="animation-delay: 0.3s"></div>
+        <div class="w-2 bg-flower-red rounded-full h-14 animate-pulse" style="animation-delay: 0.4s"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Feedback Modal -->
+  <div id="feedbackModal" class="feedback-modal">
+    <div class="feedback-modal-content elder-shadow">
+      <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center">
+        <span class="material-symbols-outlined text-white text-6xl">check</span>
+      </div>
+      <h2 class="text-3xl font-black text-on-surface mb-4">✅ 已发送！</h2>
+      <p class="text-xl text-on-surface-variant font-medium">小明收到您的消息会很高兴的～</p>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] rounded-t-4xl pb-6 z-50">
+    <div class="flex justify-around items-center px-4 py-4">
+      <a class="flex flex-col items-center justify-center text-slate-400 px-6 py-3">
+        <span class="material-symbols-outlined text-3xl mb-1">auto_stories</span>
+        <span class="text-sm font-bold">归档</span>
+      </a>
+      <a class="flex flex-col items-center justify-center bg-warm-orange/10 text-warm-orange-dark rounded-3xl px-8 py-3">
+        <span class="material-symbols-outlined text-3xl mb-1" style="font-variation-settings: 'FILL' 1;">record_voice_over</span>
+        <span class="text-sm font-bold">交流</span>
+      </a>
+      <a class="flex flex-col items-center justify-center text-slate-400 px-6 py-3">
+        <span class="material-symbols-outlined text-3xl mb-1">family_history</span>
+        <span class="text-sm font-bold">家人</span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    let isRecording = false;
+    let confettiInterval;
+    
+    // Enhanced confetti with multiple emojis
+    const confettiEmojis = ['🌸', '🌺', '🌹', '💐', '✨', '❤️', '🎉'];
+    
+    function sendFlower() {
+      // Show celebration
+      const celebrationIcon = document.getElementById('celebrationIcon');
+      celebrationIcon.innerHTML = '<span class="material-symbols-outlined text-white text-7xl heart-pulse">favorite</span>';
+      
+      // Create enhanced confetti with emojis
+      const container = document.getElementById('confettiContainer');
+      
+      for (let i = 0; i < 80; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.textContent = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.fontSize = (Math.random() * 20 + 20) + 'px';
+          confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          container.appendChild(confetti);
+          
+          setTimeout(() => confetti.remove(), 4000);
+        }, i * 30);
+      }
+      
+      // Show success modal
+      setTimeout(() => {
+        showFeedbackModal('🌸 太棒了！小明收到您的花了！');
+      }, 1000);
+    }
+    
+    function startRecording() {
+      isRecording = true;
+      const recordButton = document.getElementById('recordButton');
+      const recordIcon = document.getElementById('recordIcon');
+      const recordText = document.getElementById('recordText');
+      const recordingStatus = document.getElementById('recordingStatus');
+      
+      recordButton.classList.add('recording-pulse');
+      recordButton.classList.remove('from-reply-blue', 'to-reply-blue-dark');
+      recordButton.classList.add('from-flower-red', 'to-flower-red-dark');
+      recordIcon.textContent = 'mic_off';
+      recordText.innerHTML = '松开发送';
+      recordingStatus.classList.remove('hidden');
+    }
+    
+    function stopRecording() {
+      if (!isRecording) return;
+      isRecording = false;
+      
+      const recordButton = document.getElementById('recordButton');
+      const recordIcon = document.getElementById('recordIcon');
+      const recordText = document.getElementById('recordText');
+      const recordingStatus = document.getElementById('recordingStatus');
+      
+      recordButton.classList.remove('recording-pulse', 'from-flower-red', 'to-flower-red-dark');
+      recordButton.classList.add('from-reply-blue', 'to-reply-blue-dark');
+      recordIcon.textContent = 'mic';
+      recordText.innerHTML = '按住按钮，跟读一遍单词<br/>或者对小明说：\'收到了，真好听！\'';
+      recordingStatus.classList.add('hidden');
+      
+      // Show success modal
+      setTimeout(() => {
+        showFeedbackModal('🎤 录音已发送！小明收到您的回复了！');
+      }, 500);
+    }
+    
+    function showFeedbackModal(message) {
+      const modal = document.getElementById('feedbackModal');
+      const modalContent = modal.querySelector('.feedback-modal-content p');
+      modalContent.textContent = message;
+      modal.classList.add('show');
+      
+      // Auto-hide after 3 seconds
+      setTimeout(() => {
+        modal.classList.remove('show');
+      }, 3000);
+    }
+    
+    function replay() {
+      // Navigate back to learning page
+      navigateTo('learning');
+    }
+    
+    function navigateTo(page) {
+      if (page === 'home') {
+        window.location.href = 'index.html';
+      } else if (page === 'learning') {
+        window.location.href = 'learning.html';
+      }
+    }
+  </script>
+</body>
+</html>

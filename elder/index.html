@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>亲声伴读 - 首页</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "elder-bg": "#FFF8F0",
+            "elder-warm": "#FFF8F0",
+            "warm-orange": "#FF9F43",
+            "warm-orange-dark": "#E67E22",
+            "warm-cream": "#FFFBF5",
+            "surface": "#f7f5ff",
+            "surface-container": "#e4e7ff",
+            "surface-container-low": "#efefff",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#0057bd",
+            "primary-container": "#6e9fff",
+            "secondary": "#3a53b7",
+            "secondary-container": "#c7cfff",
+            "tertiary": "#893c92",
+            "tertiary-container": "#f199f7",
+            "on-surface": "#1a1a1a",
+            "on-surface-variant": "#333333",
+            "outline-variant": "#a3abd7",
+          },
+          fontFamily: {
+            "elder": ["Noto Sans SC", "sans-serif"],
+          },
+          borderRadius: {
+            "2xl": "1.5rem",
+            "3xl": "2rem",
+            "4xl": "2.5rem",
+          },
+          fontSize: {
+            "huge": ["3.5rem", { lineHeight: "1.1" }],
+            "massive": ["4.5rem", { lineHeight: "1.1" }],
+          }
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 48;
+    }
+    
+    .elder-shadow {
+      box-shadow: 0 20px 40px -10px rgba(255, 159, 67, 0.3);
+    }
+    
+    /* 三层呼吸光晕动画 */
+    @keyframes halo-breath {
+      0%, 100% { 
+        box-shadow: 
+          0 0 40px rgba(255, 159, 67, 0.3),
+          0 0 80px rgba(255, 159, 67, 0.2),
+          0 0 120px rgba(255, 159, 67, 0.1);
+      }
+      50% { 
+        box-shadow: 
+          0 0 80px rgba(255, 159, 67, 0.6),
+          0 0 120px rgba(255, 159, 67, 0.4),
+          0 0 160px rgba(255, 159, 67, 0.2);
+      }
+    }
+    
+    .halo-glow {
+      animation: halo-breath 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+
+<body class="bg-elder-warm min-h-screen flex flex-col">
+  
+  <!-- Top Navigation -->
+  <nav class="bg-white/80 backdrop-blur-xl shadow-sm sticky top-0 z-50">
+    <div class="flex justify-between items-center px-6 py-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-surface-container overflow-hidden border-2 border-warm-orange/30">
+          <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA36ML8HLIjJhksWM9xCpWLpxnBwtelNi62b9V99hW36-E9C1DCdeqCWXg1epSCbN2PA1Q6lG1yN6oI-1FOadeYtgwKjeSAfa6xLFcIVS-ksuY5ORTPjyKmy2G_Y9skbrpv_cTz3JJNtA0enziJCdRURjVXQdjshWGlk-g-_4R1fuutzxUQvqrLy0fDetIGD30vKGfpq3we1Ux0G9ODrGYE7LnPSo4oSQPNr3PW7R65kdkPaVMfnvkVSxc2VJ5SFnIqCUclv5h_1jn3" alt="用户头像"/>
+        </div>
+        <span class="text-2xl font-black text-warm-orange-dark">亲声伴读</span>
+      </div>
+      <button class="p-2 text-slate-500 hover:bg-warm-orange/10 transition-colors rounded-full">
+        <span class="material-symbols-outlined text-3xl">settings</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col items-center justify-center px-6 pt-12 pb-32 text-center">
+    
+    <!-- Time Greeting -->
+    <div class="mb-8">
+      <p id="timeGreeting" class="text-3xl font-black text-warm-orange-dark mb-2"></p>
+    </div>
+    
+    <!-- Avatar with Notification Badge -->
+    <div class="relative mb-10">
+      <!-- Background Halo -->
+      <div class="absolute inset-0 bg-warm-orange/15 rounded-full scale-150 blur-3xl"></div>
+      
+      <!-- Child's Avatar -->
+      <div class="relative w-52 h-52 rounded-full border-[6px] border-white shadow-2xl overflow-hidden halo-glow">
+        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTIwZw4QhpAxB7AcQ6mJqCYI4cOOXyeeYscgJkA0aHE9vx50vPODpYvp2UOcftGuniKuYPMU1ntUjP1_PJxbzZleEYtSskSSySG_ySCW9NAK3mBkk8dJiH5b6cbYOf3gRYiVG6NYdqVo6OUf5MQUAANONi1jDr68xzITjXARaPY1d68KM5F5FAaOx-VVknN_P3dNlMiIMl8nxGBslsKe0qsn1ONlXjo2MwohTqcfOCbx_oBLCiICl3p_vUhUyB1gsYzg7w_GCp08Ww" alt="孩子的头像"/>
+      </div>
+      
+      <!-- Notification Badge -->
+      <div class="absolute -bottom-3 -right-3 bg-warm-orange text-white w-20 h-20 rounded-full flex items-center justify-center border-4 border-elder-warm elder-shadow">
+        <div class="text-center">
+          <span class="text-4xl font-black">3</span>
+          <span class="text-xs font-bold block">个新问候</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learning Status -->
+    <div class="bg-surface-container-lowest rounded-4xl p-6 elder-shadow mb-12 max-w-md">
+      <div class="flex items-center justify-center gap-3">
+        <span class="material-symbols-outlined text-warm-orange text-3xl">schedule</span>
+        <p id="lastLearned" class="text-xl font-bold text-on-surface">上次学习：2 小时前 · 已连续学习 5 天 🔥</p>
+      </div>
+    </div>
+
+    <!-- Welcome Message -->
+    <div class="space-y-6 mb-16 max-w-xl">
+      <h1 class="text-4xl md:text-5xl font-black text-on-surface leading-tight">
+        <span class="text-warm-orange-dark">[小明]</span><br/>给您发来了新问候
+      </h1>
+      <p class="text-xl text-on-surface-variant font-medium leading-relaxed">
+        点击下方大按钮，<br/>听听家人的声音
+      </p>
+    </div>
+
+    <!-- Primary Action Button - ENLARGED TEXT -->
+    <button onclick="navigateTo('learning')" class="w-full max-w-md py-10 bg-gradient-to-br from-warm-orange to-warm-orange-dark text-white rounded-4xl text-[2.5rem] font-black elder-shadow transition-all active:scale-95 flex items-center justify-center gap-4 group float-animation">
+      <span class="material-symbols-outlined text-5xl group-hover:translate-x-2 transition-transform">play_circle</span>
+      点一下 听声音
+    </button>
+
+    <!-- Free Learning Entry -->
+    <button onclick="navigateTo('freestyle')" class="w-full max-w-md mt-6 py-8 bg-gradient-to-br from-primary to-secondary text-white rounded-4xl text-3xl font-black elder-shadow transition-all active:scale-95 flex items-center justify-center gap-4 group">
+      <span class="material-symbols-outlined text-5xl group-hover:rotate-12 transition-transform">school</span>
+      自由学习
+    </button>
+    <p class="mt-3 text-lg text-on-surface-variant font-medium">想学什么？自己选！</p>
+
+    <!-- Helper Text -->
+    <div class="mt-12 flex items-center gap-3 text-on-surface-variant/60 font-semibold">
+      <span class="material-symbols-outlined text-2xl">touch_app</span>
+      <span class="text-lg">点击橙色按钮开始</span>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] rounded-t-4xl pb-6 z-50">
+    <div class="flex justify-around items-center px-4 py-4">
+      <a class="flex flex-col items-center justify-center text-slate-400 px-6 py-3">
+        <span class="material-symbols-outlined text-3xl mb-1">auto_stories</span>
+        <span class="text-sm font-bold">归档</span>
+      </a>
+      <a class="flex flex-col items-center justify-center bg-warm-orange/10 text-warm-orange-dark rounded-3xl px-8 py-3">
+        <span class="material-symbols-outlined text-3xl mb-1" style="font-variation-settings: 'FILL' 1;">record_voice_over</span>
+        <span class="text-sm font-bold">交流</span>
+      </a>
+      <a class="flex flex-col items-center justify-center text-slate-400 px-6 py-3">
+        <span class="material-symbols-outlined text-3xl mb-1">family_history</span>
+        <span class="text-sm font-bold">家人</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Subtle Texture Overlay -->
+  <div class="fixed inset-0 pointer-events-none opacity-10" style="background-image: radial-gradient(#FF9F43 1px, transparent 1px); background-size: 32px 32px; z-index: -1;"></div>
+
+  <script>
+    // Time-based greeting
+    function updateTimeGreeting() {
+      const hour = new Date().getHours();
+      const greetingElement = document.getElementById('timeGreeting');
+      
+      let greeting;
+      if (hour >= 5 && hour < 12) {
+        greeting = '早上好！☀️';
+      } else if (hour >= 12 && hour < 18) {
+        greeting = '下午好！🌤️';
+      } else {
+        greeting = '晚上好！🌙';
+      }
+      
+      greetingElement.textContent = greeting;
+    }
+    
+    // Load last learned status
+    function loadLearningStatus() {
+      const lastLearnedElement = document.getElementById('lastLearned');
+      
+      // Simulated data - in production this would come from backend
+      const hoursAgo = 2;
+      const consecutiveDays = 5;
+      
+      lastLearnedElement.textContent = `上次学习：${hoursAgo}小时前 · 已连续学习 ${consecutiveDays}天 🔥`;
+    }
+    
+    function navigateTo(page) {
+      if (page === 'home') {
+        window.location.href = 'index.html';
+      } else if (page === 'learning') {
+        window.location.href = 'learning.html';
+      } else if (page === 'feedback') {
+        window.location.href = 'feedback.html';
+      } else if (page === 'freestyle') {
+        window.location.href = 'freestyle.html';
+      }
+    }
+    
+    // Initialize
+    updateTimeGreeting();
+    loadLearningStatus();
+  </script>
+</body>
+</html>
